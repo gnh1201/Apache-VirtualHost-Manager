@@ -114,9 +114,14 @@ if [ -z "$vhostname" ]; then
 	vhostname="$domainname"
 fi
 
-# if no -d is provided then it will be set the same as vhostname
+# if no -d is provided then it will be set the same as 'www'
 if [ -z "$dirname" ]; then
 	dirname="www"
+fi
+
+# if not defined variable APACHE_LOG_DIR, it will set '/var/log/apache2'
+if [ -z "$APACHE_LOG_DIR" ]; then
+	APACHE_LOG_DIR="/var/log/apache2"
 fi
 
 vHostTemplate="$(echo "
