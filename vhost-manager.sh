@@ -137,7 +137,7 @@ vHostTemplate="$(echo "
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
-	<Directory "$apacheWWW}$dirname">
+	<Directory "$apacheWWW$dirname">
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride all
 		Order allow,deny
