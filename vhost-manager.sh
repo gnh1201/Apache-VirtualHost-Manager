@@ -80,10 +80,10 @@ while getopts "a:e:w:n:d:vh" opt; do
 done
 
 if [ -z "$username" ]; then
-	apacheWWW="/var/www"
+	apacheWWW="/var/www/"
 	apacheScriptsDir="/usr/lib/cgi-bin/"
 else
-	apacheWWW="/home/${username}/www"
+	apacheWWW="/home/${username}/"
 	apacheScriptsDir="${apacheWWW}/cgi-bin/"
 fi
 
@@ -111,7 +111,7 @@ fi
 
 # if no -d is provided then it will be set the same as vhostname
 if [ -z "$dirname" ]; then
-	dirname=""
+	dirname="www"
 fi
 
 vHostTemplate="$(echo "
@@ -187,7 +187,7 @@ if [ $action == "create" ]; then
 	fi
 	
 	# sets www-data permission
-	if chown -R www-data:www-data $apacheWWW$dirname > /dev/null; then
+	if chown -R $username:$username $apacheWWW$dirname > /dev/null; then
 		verbose "Folder permission changed"
 	else 
 		echo "An error occurred while changing permission to "$dirname""
