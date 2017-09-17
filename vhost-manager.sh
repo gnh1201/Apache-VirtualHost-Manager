@@ -84,14 +84,6 @@ while getopts "a:e:w:n:d:u:vh" opt; do
 	esac
 done
 
-if [ -z "$username" ]; then
-	apacheWWW="/var/www/"
-	apacheScriptsDir="/usr/lib/cgi-bin/"
-else
-	apacheWWW="/home/${username}/"
-	apacheScriptsDir="${apacheWWW}cgi-bin/"
-fi
-
 shift "$((OPTIND-1))" # Shift off the options and optional --.
 
 if ! $aFlag; then # -a is mandatory
@@ -117,6 +109,16 @@ fi
 # if no -d is provided then it will be set the same as 'www'
 if [ -z "$dirname" ]; then
 	dirname="www"
+fi
+
+# if no username, dirname the same as vhostname
+if [ -z "$username" ]; then
+	apacheWWW="/var/www/"
+	dirname="$vhostname"
+	apacheScriptsDir="/usr/lib/cgi-bin/"
+else
+	apacheWWW="/home/${username}/"
+	apacheScriptsDir="${apacheWWW}${dirname}/cgi-bin/"
 fi
 
 # if not defined variable APACHE_LOG_DIR, it will set '/var/log/apache2'
