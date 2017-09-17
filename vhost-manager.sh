@@ -6,6 +6,9 @@
 #	- https://unnikked.tk (italian website)
 #	- https://unnikked.ga (english website)
 
+# edit by gnh1201
+#       - gnh1201@gmail.com
+
 if [ "$(id -u)" != 0 ]; then
 	echo "You must be root or use sudo"
 	exit 1
