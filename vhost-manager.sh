@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# A VirtualHost manager for Apache 2.4.7, tested on Ubuntu 14.04 LTS
+# A VirtualHost manager for Apache 2.4.18, tested on Ubuntu 16.04 LTS
+# 2017-09-17
 
 # by unnikked
 #	- https://unnikked.tk (italian website)
 #	- https://unnikked.ga (english website)
 
-# edit by gnh1201
+# updated by gnh1201
+#       - https://exts.kr (english/korean website)
 #       - gnh1201@gmail.com
 
 if [ "$(id -u)" != 0 ]; then
@@ -21,8 +23,8 @@ fi
 
 function show_help() {
 	cat << EOF
-Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-u USER_NAME] [-d DIR_NAME] 
-	
+Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-u USER_NAME] [-d DIR_NAME]
+
 	-a			create, delete or list
 	-e			webmaster email
 	-w			domain name (eg example.com)
@@ -32,7 +34,7 @@ Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-u
 				VHOST_NAME)
 	-u			username
 	-v			verbose
-	-h			this help		
+	-h			this help
 EOF
 }
 
@@ -87,7 +89,7 @@ if [ -z "$username" ]; then
 	apacheScriptsDir="/usr/lib/cgi-bin/"
 else
 	apacheWWW="/home/${username}/"
-	apacheScriptsDir="${apacheWWW}/cgi-bin/"
+	apacheScriptsDir="${apacheWWW}cgi-bin/"
 fi
 
 shift "$((OPTIND-1))" # Shift off the options and optional --.
