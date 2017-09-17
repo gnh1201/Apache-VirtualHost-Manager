@@ -33,7 +33,7 @@ Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-u
 	-d			directory name of the root directory (if not specified it uses
 				VHOST_NAME)
 	-u			username
-	-m			make directory flag
+	-m			NOT_MAKE_DIR
 	-v			verbose
 	-h			this help
 EOF
