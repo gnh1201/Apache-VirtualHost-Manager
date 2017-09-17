@@ -18,7 +18,7 @@ fi
 
 function show_help() {
 	cat << EOF
-Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-d DIR_NAME] 
+Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-u USER_NAME] [-d DIR_NAME] 
 	
 	-a			create, delete or list
 	-e			webmaster email
