@@ -23,7 +23,7 @@ fi
 
 function show_help() {
 	cat << EOF
-Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-u USER_NAME] [-d DIR_NAME]
+Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-u USER_NAME] [-d DIR_NAME] [-m NOT_MAKE_DIR]
 
 	-a			create, delete or list
 	-e			webmaster email
@@ -33,6 +33,7 @@ Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-u
 	-d			directory name of the root directory (if not specified it uses
 				VHOST_NAME)
 	-u			username
+	-m			make directory flag
 	-v			verbose
 	-h			this help
 EOF
@@ -46,6 +47,7 @@ domainname=""
 vhostname=""
 dirname=""
 username=""
+notmakedir=""
 vFlag=false
 verbose=0
 
@@ -55,7 +57,7 @@ sitesEnabled="/etc/apache2/sites-enabled/"
 sitesAvailable="/etc/apache2/sites-available/"
 #apacheWWW="/var/www/"
 
-while getopts "a:e:w:n:d:u:vh" opt; do
+while getopts "a:e:w:n:d:u:m:vh" opt; do
 	case "$opt" in
 		v)	verbose=$((verbose+1))
 			vFlag=true
@@ -73,6 +75,8 @@ while getopts "a:e:w:n:d:u:vh" opt; do
 		d)	dirname=$OPTARG
 			;;
 		u)	username=$OPTARG
+			;;
+		m)	notmakedir=$OPTARG
 			;;
 		h) 	show_help
 			exit 0
@@ -125,6 +129,12 @@ fi
 if [ -z "$APACHE_LOG_DIR" ]; then
 	APACHE_LOG_DIR="/var/log/apache2"
 fi
+
+# NOT_MAKE_DIR
+if [ -z "$notmakedir" ]; then
+	notmakedir=""
+else
+	notmakedir="ignore"
 
 vHostTemplate="$(echo "
 <VirtualHost *:80>
@@ -179,25 +189,27 @@ function verbose() {
 
 if [ $action == "create" ]; then
 	# checks if domain already exists
-	if [ -e $sitesAvailable$vhostname ]; then
-		echo -e "This domain already exists."
-		exit 1;
+	if [ -z "$notmakedir" ]; then
+		if [ -e $sitesAvailable$vhostname ]; then
+			echo -e "This domain already exists."
+			exit 1;
+		fi
+
+		# checks if the folder already exists
+		if [ -d $apacheWWW$dirname ]; then
+			echo "Directory already exists!"
+			exit 1;
+		fi
+
+		# creates the folder
+		if ! mkdir -p $apacheWWW$dirname > /dev/null; then
+			echo "An error occurred while creating "$apacheWWW$dirname""
+			exit 1
+		else 
+			echo "Folder "$apacheWWW$dirname" created"
+		fi
 	fi
-	
-	# checks if the folder already exists
-	if [ -d $apacheWWW$dirname ]; then
-		echo "Directory already exists!"
-		exit 1;
-	fi
-	
-	# creates the folder
-	if ! mkdir -p $apacheWWW$dirname > /dev/null; then
-		echo "An error occurred while creating "$apacheWWW$dirname""
-		exit 1
-	else 
-		echo "Folder "$apacheWWW$dirname" created"
-	fi
-	
+
 	# sets www-data permission
 	if chown -R $username:$username $apacheWWW$dirname > /dev/null; then
 		verbose "Folder permission changed"
