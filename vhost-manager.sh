@@ -122,8 +122,8 @@ vHostTemplate="$(echo "
 	ServerAdmin $email 
 	ServerAlias $domainname www.$domainname
 	ServerName $domainname
-	DocumentRoot $apacheWWW
-	
+	DocumentRoot $apacheWWW$dirname
+
 	<IfModule mod_suexec.c>
 		SuexecUserGroup $username $username
 	</IfModule>
@@ -132,12 +132,12 @@ vHostTemplate="$(echo "
 		suPHP_UserGroup $username $username
 		suPHP_ConfigPath /home/$username
 	</IfModule>
-	
+
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
-	<Directory $apacheWWW>
+	<Directory "$apacheWWW}$dirname">
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride all
 		Order allow,deny
