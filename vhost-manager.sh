@@ -27,6 +27,7 @@ Usage: ${0##*/} -vh [-a ACTION ] [-e EMAIL] [-w DOMAIN_NAME] [-n VHOST_NAME] [-d
 				DOMAIN_NAME)
 	-d			directory name of the root directory (if not specified it uses
 				VHOST_NAME)
+	-u			username
 	-v			verbose
 	-h			this help		
 EOF
@@ -39,6 +40,7 @@ wFlag=false
 domainname=""
 vhostname=""
 dirname=""
+username=""
 vFlag=false
 verbose=0
 
@@ -46,7 +48,7 @@ OPTIND=1
 
 sitesEnabled="/etc/apache2/sites-enabled/"
 sitesAvailable="/etc/apache2/sites-available/"
-apacheWWW="/var/www/"
+#apacheWWW="/var/www/"
 
 while getopts "a:e:w:n:d:vh" opt; do
 	case "$opt" in
@@ -65,6 +67,8 @@ while getopts "a:e:w:n:d:vh" opt; do
 			;;
 		d)	dirname=$OPTARG
 			;;
+		u)	username=$OPTARG
+			;;
 		h) 	show_help
 			exit 0
 			;;
@@ -74,6 +78,14 @@ while getopts "a:e:w:n:d:vh" opt; do
 			;;
 	esac
 done
+
+if [ -z "$username" ]; then
+	apacheWWW="/var/www"
+	apacheScriptsDir="/usr/lib/cgi-bin/"
+else
+	apacheWWW="/home/${username}/www"
+	apacheScriptsDir="${apacheWWW}/cgi-bin/"
+fi
 
 shift "$((OPTIND-1))" # Shift off the options and optional --.
 
@@ -99,7 +111,7 @@ fi
 
 # if no -d is provided then it will be set the same as vhostname
 if [ -z "$dirname" ]; then
-	dirname="$vhostname"
+	dirname=""
 fi
 
 vHostTemplate="$(echo "
@@ -107,20 +119,30 @@ vHostTemplate="$(echo "
 	ServerAdmin $email 
 	ServerAlias $domainname www.$domainname
 	ServerName $domainname
-	DocumentRoot /var/www/$dirname
+	DocumentRoot $apacheWWW
+	
+	<IfModule mod_suexec.c>
+		SuexecUserGroup $username $username
+	</IfModule>
+
+	<IfModule mod_suphp.c>
+		suPHP_UserGroup $username $username
+		suPHP_ConfigPath /home/$username
+	</IfModule>
+	
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
-	<Directory /var/www/$dirname>
+	<Directory $apacheWWW>
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride all
 		Order allow,deny
 		allow from all
 	</Directory>
 
-	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-	<Directory "/usr/lib/cgi-bin">
+	ScriptAlias /cgi-bin/ "$apacheScriptsDir"
+	<Directory "$apacheScriptsDir">
 		AllowOverride None
 		Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
 		Order allow,deny
