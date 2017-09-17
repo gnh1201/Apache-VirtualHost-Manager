@@ -135,6 +135,7 @@ if [ -z "$notmakedir" ]; then
 	notmakedir=""
 else
 	notmakedir="ignore"
+fi
 
 vHostTemplate="$(echo "
 <VirtualHost *:80>
