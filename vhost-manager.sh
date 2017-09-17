@@ -160,16 +160,14 @@ vHostTemplate="$(echo "
 	<Directory "$apacheWWW$dirname">
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride all
-		Order allow,deny
-		allow from all
+		Require all granted
 	</Directory>
 
 	ScriptAlias /cgi-bin/ "$apacheScriptsDir"
 	<Directory "$apacheScriptsDir">
 		AllowOverride None
 		Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-		Order allow,deny
-		Allow from all
+		Require all granted
 	</Directory>
 
 	ErrorLog ${APACHE_LOG_DIR}/error.log
